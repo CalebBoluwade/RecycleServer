@@ -5,13 +5,14 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import { config } from './Config/config';
 import bodyParser from 'body-parser';
+import { initializeUnhandledException } from './Utils/ErrorHandler.util';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
 
-import { ApplicationRouter, Route } from './Routes/Route.Index';
+import { App, Route } from './Routes/Route.Index';
 import { OpenApi, textPlain } from 'ts-openapi';
-import { openApiInstance } from './openApi';
+import { openApiInstance } from './Utils/openApi.util';
 
 const router: Application = express();
 
@@ -28,14 +29,12 @@ mongoose
 
 const startHttpsServer = () => {
     router.use((req, res, next) => {
-        console.log(
-            `${new Date()} Incomming Method: [${req.method}] - URL: [${req.url}] - Thread: [${process.pid}] IP: [${req.socket.remoteAddress}], Request: [${
-                req.method === '[GET]' ? req.params || req.query : req.body
-            }]`
-        );
+        console.log(`${new Date()} ===> [METHOD]: [${req.method}] <-> [ENDPOINT]: [${req.url}] <-> [THREAD]: [${process.pid}] <-> [IP]: [${req.socket.remoteAddress}]`);
 
         next();
     });
+
+    initializeUnhandledException();
 
     router.use(express.urlencoded({ extended: true }));
     router.use(express.json());
@@ -50,21 +49,9 @@ const startHttpsServer = () => {
     );
 
     /** Routes */
-
-    /** Healthcheck */
     router.use('/api/v1', Route);
 
-    // router.get('/ping', (req: Request, res: Response, next: NextFunction) => res.status(200).json({ hello: 'world' }));
-
-    const ping = (req: Request, res: Response, next: NextFunction) => {
-        res.status(200).json({ hello: 'world' });
-    };
-
-    // initHello(router, openApiInstance);
-
-    // initializes schema endpoint and UI
-    // initOpenApi(router, openApiInstance);
-    ApplicationRouter(router, openApiInstance, ping);
+    App(router);
 
     router.listen(Number(process.env.PORT) || 4321, () => {
         console.log(`Server started on Port ${process.env.PORT || 4321}`);

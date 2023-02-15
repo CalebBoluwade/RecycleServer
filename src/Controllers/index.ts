@@ -1,10 +1,10 @@
-import { ApplicationRouter } from '../Routes/Route.Index';
-import letUsersLogin from './Login';
-import UserCreation from './Register';
-import router from '../server';
-import { openApiInstance } from '../openApi';
-import { OpenApi, textPlain } from 'ts-openapi';
+import letUsersLogin from './Auth/Login.authService';
+import UserCreation from './Auth/Register.authService';
+
+import GenerateQR from './QR/qr';
+
+import SessionController from './Session.Controller';
 
 // ApplicationRouter(router, letUsersLogin)
 
-export { letUsersLogin, UserCreation };
+export { letUsersLogin, UserCreation, SessionController, GenerateQR };
