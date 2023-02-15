@@ -13,7 +13,7 @@ web-build/
 Certificates
 info.log
 error.log
-
+node_modules
 # macOS
 .DS_Store
 
