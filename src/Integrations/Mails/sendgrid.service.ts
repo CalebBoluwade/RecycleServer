@@ -1,13 +1,13 @@
-import sgMail from '@sendgrid/mail';
+import sgMail, { MailDataRequired } from '@sendgrid/mail';
 
-sgMail.setApiKey('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');
+sgMail.setApiKey(`${process.env.SENDGRID_MAIL_API_KEY}`);
 
-const TestEmail = ({ email }: { email: string }) => {
-    const msg = {
-        to: email, // Change to your recipient
-        from: 'calebb.jnr@gmail.com', // Change to your verified sender
-        subject: 'Sending with SendGrid is Fun',
-        text: 'and easy to do anywhere, even with Node.js',
+const EmailClient = ({ email, subject, body }: { email: string; subject: string; body: string }) => {
+    const msg: MailDataRequired = {
+        to: email,
+        from: String(process.env.VERIFIED_SENDER),
+        subject: subject,
+        text: body,
         html: '<strong>and easy to do anywhere, even with Node.js</strong>'
     };
     sgMail
@@ -15,9 +15,9 @@ const TestEmail = ({ email }: { email: string }) => {
         .then(() => {
             console.log('Email sent');
         })
-        .catch((error) => {
+        .catch((error: any) => {
             console.error(error, error?.response?.body?.errors.message);
         });
 };
 
-export default TestEmail;
+export default EmailClient;

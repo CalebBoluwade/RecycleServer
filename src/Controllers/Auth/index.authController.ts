@@ -1,17 +1,16 @@
 import { Router } from 'express';
-
 import letUsersLogin from './Login.authService';
-import UserCreation from './Register.authService';
-import { LoginUserSchema } from './auth.schema';
+import UserCreation, { VerifyUser } from './Register.authService';
+import { LoginUserSchema, createUserSchema, verifyUserSchema } from './auth.schema';
 import ValidateRequest from '../../Middlewares/Validate.middleware';
 
 import { OpenApi, textPlain, Types } from 'ts-openapi';
-import { userTypeSet } from '../../Utils/Types.utils';
+import { UserSet } from '../../Utils/Types.utils';
 
 export const LoginRoute = (Route: Router, openApi: OpenApi) => {
-    Route.post('/login', ValidateRequest(LoginUserSchema), letUsersLogin);
+    Route.post('/users/continue', ValidateRequest(LoginUserSchema), letUsersLogin);
     openApi.addPath(
-        '/login',
+        '/users/continue',
         {
             post: {
                 description: 'User Authentication', // Method description
@@ -64,9 +63,9 @@ export const LoginRoute = (Route: Router, openApi: OpenApi) => {
 };
 
 export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
-    Route.post('/join', UserCreation);
+    Route.post('/users/join', ValidateRequest(createUserSchema), UserCreation);
     openApi.addPath(
-        '/join',
+        '/users/join',
         {
             post: {
                 description: 'User Registration', // Method description
@@ -100,7 +99,7 @@ export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
                                 minLength: 8
                             }),
                             userType: Types.StringEnum({
-                                values: Object.values(userTypeSet),
+                                values: Object.values(UserSet),
                                 description: 'Customer Type',
                                 required: true
                             })
@@ -108,7 +107,7 @@ export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
                         default: {
                             email: 'dad',
                             password: 'mom',
-                            userType: userTypeSet.USER
+                            userType: UserSet.USER
                         }
                     })
                 },
@@ -133,6 +132,43 @@ export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
                     //         // })
                     // },
                     // 400: content: Types.Object({})
+                    500: textPlain('Internal Server Error')
+                },
+                tags: ['Auth'], // these tags group your methods in UI,
+                security: []
+            }
+        },
+        true // make method visible
+    );
+};
+
+export const verifyRoute = (Route: Router, openApi: OpenApi) => {
+    Route.post('/users/verify/:id/:verificationCode', ValidateRequest(verifyUserSchema), VerifyUser);
+    openApi.addPath(
+        '/users/verify/:id/:verificationCode',
+        {
+            get: {
+                description: 'User Verification', // Method description
+                summary: 'User Verification API', // Method summary
+                operationId: 'user-verify', // an unique operation id
+                requestSchema: {
+                    headers: {},
+                    params: {
+                        id: Types.String({
+                            description: "User's Full Name",
+                            maxLength: 50,
+                            required: true
+                        }),
+                        verificationCode: Types.String({
+                            description: "User's Verification Code",
+                            maxLength: 6,
+                            required: true
+                        })
+                    }
+                },
+                responses: {
+                    201: textPlain('Created'),
+                    400: textPlain('Bad Request'),
                     500: textPlain('Internal Server Error')
                 },
                 tags: ['Auth'], // these tags group your methods in UI,

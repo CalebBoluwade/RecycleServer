@@ -3,13 +3,15 @@ import jwt from 'jsonwebtoken';
 const privateKey = 'kaTakaTa';
 const publicKey = 'kaTakaTa2';
 
-export const signJWT = (requestBody: any) => {
-    return jwt.sign(requestBody, privateKey);
+export const signJWT = (id: any) => {
+    return jwt.sign({ _id: id }, privateKey, {
+        expiresIn: '1d'
+    });
 };
 
 export const verifyJWT = (token: string) => {
     try {
-        const decoded = jwt.verify(token, publicKey);
+        const decoded = jwt.verify(token, privateKey);
 
         return {
             valid: true,

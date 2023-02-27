@@ -1,15 +1,8 @@
-import { number } from 'joi';
 import mongoose, { Document, Schema } from 'mongoose';
-
-export enum customerStatus {
-    'ACTIVE' = 'ACTIVE',
-    'PENDING' = 'PENDING',
-    'DISABLED' = 'DISABLED',
-    'DELETED' = 'DELETED'
-}
+import { customerStatus } from '../../Utils/Types.utils';
 
 export interface IVendor {
-    fullName: string;
+    companyName: string;
     email: string;
     password: string;
     userType: string;
@@ -21,7 +14,7 @@ export interface IVendor {
 export interface IVendorModel extends IVendor, Document {}
 
 const vendorSchema: Schema = new Schema({
-    fullName: {
+    companyName: {
         type: String,
         required: true
     },

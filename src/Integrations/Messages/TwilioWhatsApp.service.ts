@@ -1,6 +1,6 @@
 // import {Twilio} from 'twilio';
 import { Twilio } from 'twilio';
-const accountSid = process.env.accountSid;
+const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 export const sendWhatsAppMessage = ({ phoneNumber, message }: any) => {
@@ -9,7 +9,7 @@ export const sendWhatsAppMessage = ({ phoneNumber, message }: any) => {
 
         client.messages
             .create({ body: message, from: 'whatsapp:+14155238886', to: `whatsapp:${phoneNumber}` })
-            .then((message: any) => console.log(message))
+            .then((message: any) => console.log('WhatsApp Sent'))
             .catch((e) => console.error(e));
     } catch (err) {
         console.log(err);

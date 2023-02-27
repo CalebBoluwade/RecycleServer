@@ -1,13 +1,22 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import { CollectorStatus, CompletionStatus } from '../../Utils/Types.utils';
 
 export interface IBin {
     email: string;
     address: string;
     wasteBags: number;
-    imageDescription: string;
-    pickupDate: Date;
-    vendorID: Schema.Types.ObjectId | string;
-    status: boolean | null;
+    wasteMaterials: string[];
+    phoneNumber: string;
+    imageDescription?: string | null;
+    pickupDate: number;
+    vendor: {
+        id: Schema.Types.ObjectId | string;
+        vendor: string;
+        vendorTel: string;
+        vendorEmail: string;
+    };
+    CollectorStatus: CollectorStatus;
+    CompletionStatus: CompletionStatus;
 }
 
 export interface IBinModel extends IBin, Document {
@@ -24,8 +33,16 @@ const BinSchema: Schema = new Schema({
         type: String,
         required: true
     },
+    phoneNumber: {
+        type: String,
+        required: true
+    },
     wasteBags: {
         type: Number,
+        required: true
+    },
+    wasteMaterials: {
+        type: Array,
         required: true
     },
     imageDescription: {
@@ -33,12 +50,16 @@ const BinSchema: Schema = new Schema({
         required: false
     },
     pickupDate: {
-        type: Date,
+        type: Number,
         required: true
     },
-    vendorID: { type: Schema.Types.ObjectId, required: true, ref: 'Vendor' },
-    status: {
-        type: Boolean,
+    vendor: { type: Object, required: true, ref: 'Vendor' },
+    CollectorStatus: {
+        type: String,
+        required: true
+    },
+    CompletionStatus: {
+        type: String,
         required: true
     }
 });

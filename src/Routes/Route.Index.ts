@@ -1,6 +1,9 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import { LoginRoute, RegisterRoute } from '../Controllers/Auth/index.authController';
-import { BinRoutes } from '../Controllers/Bin/index.binController';
+import { CreateBinRoute, FetchBinMaterialsRoute, FetchUserBinRoute, FetchVendorBinRoute } from '../Controllers/Bin/index.binController';
+
+// ** VENDOR ** //
+import { GetVendorsRoute, RegisterVendorRoute } from '../Controllers/Vendors/index.vendorController';
 
 import { GenerateQR } from '../Controllers/index';
 import { GenerateReferalCode, ValidateRefCode as ValidateRef } from '../Utils/index.util';
@@ -133,7 +136,13 @@ const App = (Application: Application) => {
         LoginRoute(Route, openApi);
         RegisterRoute(Route, openApi);
 
-        BinRoutes(Route, openApi);
+        RegisterVendorRoute(Route, openApi);
+        GetVendorsRoute(Route, openApi);
+
+        CreateBinRoute(Route, openApi);
+        FetchBinMaterialsRoute(Route, openApi);
+        FetchUserBinRoute(Route, openApi);
+        FetchVendorBinRoute(Route, openApi);
 
         Route.get('/test_messaging', TestMessagingService);
 

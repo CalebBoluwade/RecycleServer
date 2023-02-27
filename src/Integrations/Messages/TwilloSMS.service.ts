@@ -1,6 +1,6 @@
 // import {Twilio} from 'twilio';
-import { Twilio, RequestClient } from 'twilio';
-const accountSid = process.env.accountSid;
+import { Twilio } from 'twilio';
+const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 export const sendSMSMessage = ({ phoneNumber, message }: any) => {

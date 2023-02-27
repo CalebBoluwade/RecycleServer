@@ -1,26 +1,29 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import argo2 from 'argon2';
-
-export enum customerStatus {
-    'ACTIVE' = 'ACTIVE',
-    'PENDING' = 'PENDING',
-    'DISABLED' = 'DISABLED',
-    'DELETED' = 'DELETED'
-}
+import { customerStatus } from '../../Utils/Types.utils';
 
 export interface IUser {
     fullName: string;
     email: string;
     password: string;
     userType: string;
-    address: string;
+    address: string | null;
+    verificationCode: {
+        OTP: string;
+        expiresIn: number;
+        expirationTime: number;
+    };
     refCode: string;
     refCodeCount: number;
     phoneNumber: string;
     status: customerStatus;
 }
 
-export interface IUserModel extends IUser, Document {}
+export interface IUserModel extends IUser, Document {
+    createdAt: Date;
+    updatedAt: Date;
+    validatePassword(inputPassword: string): Promise<Boolean>;
+}
 
 const userSchema: Schema = new Schema({
     fullName: {
@@ -58,15 +61,33 @@ const userSchema: Schema = new Schema({
         required: true,
         unique: true
     },
+    verificationCode: {
+        type: Object,
+        required: true
+    },
     status: {
         type: String,
         required: true
     }
 });
 
-userSchema.pre('save', async () => {
-    // const hash = await argo2.hash(password)
-});
+// userSchema.pre<IUserModel>('save', async (next) => {
+//     const user: IUserModel = this;
+
+//   if (!user.isModified('password')) {
+//       return next();
+//   }
+//     const userHashedPwd = await argo2.hash(user.password);
+// });
+
+userSchema.methods.validatePassword = async function (inputPassword: string): Promise<boolean> {
+    const user = this as IUserModel;
+
+    return await argo2.verify(user.password, inputPassword).catch((e) => {
+        console.log(e);
+        return false;
+    });
+};
 
 // const x = () => {}
 

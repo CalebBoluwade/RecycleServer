@@ -11,6 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@onesignal/node-onesignal": "^1.0.0-beta9",
         "@sendgrid/mail": "^7.7.0",
         "@types/twilio": "^3.19.3",
         "argon2": "^0.30.3",
@@ -26,10 +27,13 @@
         "lodash": "^4.17.21",
         "mongoose": "^6.8.0",
         "nodemailer": "^6.8.0",
+        "onesignal-node": "^3.4.0",
+        "pino": "^8.11.0",
         "qrcode": "^1.5.1",
         "qrcode-reader": "^1.0.4",
         "twilio": "^3.84.1",
         "uuid": "^9.0.0",
+        "winston": "^3.8.2",
         "zod": "^3.20.6"
     },
     "devDependencies": {
