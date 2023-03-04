@@ -7,7 +7,7 @@
         "start": "nodemon build/server.js",
         "eject": "tsc -p .",
         "dev": "netlify dev",
-        "build": "netlify deploy --prod"
+        "build": "npm install && netlify deploy --prod"
     },
     "keywords": [],
     "author": "",
