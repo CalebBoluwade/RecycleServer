@@ -1,8 +1,7 @@
 [build]
     functions = "src"
+    command="npm install && npm run build"
     publish="."
-    # context="production"
-    # port=1732
 
 [[redirects]]
     to="/.netlify/functions/server/:splat"
