@@ -1,6 +1,6 @@
 [build]
     functions = "src"
-    command="netlify deploy --prod"
+    command="npm install && npm run build"
     publish="."
 
 [[redirects]]
