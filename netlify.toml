@@ -2,4 +2,7 @@
     functions = "src"
     command = "npm install"
     publish = "."
+
+[functions]
+    external_node_modules = ["mongodb", "express"]
     node_bundler = "esbuild"

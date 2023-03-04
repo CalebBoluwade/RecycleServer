@@ -83,3 +83,5 @@ dist/
 # @end expo-cli
 # Local Netlify folder
 .netlify
+.env
+.env
