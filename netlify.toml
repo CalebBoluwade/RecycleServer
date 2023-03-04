@@ -1,11 +1,19 @@
+[functions]
+    external_node_modules = ["mongodb", "express", "argon2"]
+    node_bundler = "esbuild"
+
 [build]
     functions = "src"
+    command="npm run build"
+    build=true
+    debug=true
+    prod=true
+    # port=1732
+
+[context.production.environment]
+    NODE_ENV = "production"
 
 [[redirects]]
     to="/.netlify/functions/server/:splat"
     from="/*"
     status=200
-
-[functions]
-    external_node_modules = ["mongodb", "express"]
-    node_bundler = "esbuild"
