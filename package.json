@@ -1,10 +1,11 @@
 {
-    "name": "recycledevserver",
-    "version": "1.0.0",
+    "name": "recycleserver",
+    "version": "1.0.1",
+    "repository": "https://github.com/CalebBoluwade/RecycleServer",
     "description": "",
     "main": "src/server.ts",
     "scripts": {
-        "start": "nodemon build/server.js",
+        "start": "nodemon",
         "eject": "tsc -p .",
         "dev": "netlify dev --watch",
         "build": "netlify deploy --prod"
