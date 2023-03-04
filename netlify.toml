@@ -1,11 +1,11 @@
 [build]
     functions = "src"
-    command = "npm run build"
     publish="."
+    # context="production"
     # port=1732
 
 [[redirects]]
-    to="/.netlify/functions/api/:splat"
+    to="/.netlify/functions/server/:splat"
     from="/*"
     status=200
 

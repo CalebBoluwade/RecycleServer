@@ -7,7 +7,7 @@
     "scripts": {
         "start": "nodemon",
         "eject": "tsc -p .",
-        "dev": "netlify dev --watch",
+        "dev": "netlify dev",
         "build": "netlify deploy --prod"
     },
     "keywords": [],

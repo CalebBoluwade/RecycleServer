@@ -12,11 +12,11 @@ const ValidateRequest = (schema: AnyZodObject) => (req: Request, res: Response, 
 
         console.log(
             `REQUEST: ${dayjs().format()}`,
-            schema.parse({
-                body: req.body,
-                query: req.query,
-                params: req.params
-            })
+            // schema.parse({
+            req?.body,
+            req?.params,
+            req?.query
+            // })
         );
         next();
     } catch (e: any) {
