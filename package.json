@@ -7,7 +7,7 @@
         "start": "nodemon build/server.js",
         "eject": "tsc -p .",
         "dev": "netlify dev --watch",
-        "build": "netlify deploy --prod --watch"
+        "build": "netlify deploy --prod"
     },
     "keywords": [],
     "author": "",

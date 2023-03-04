@@ -47,7 +47,7 @@ const startHttpsServer = () => {
     );
 
     /** Routes */
-    // router.get('/', (req, res) => res.send('main'));
+    router.get('/', (req, res) => res.send('main'));
     // router.use('/', Route);
     router.use('/.netlify/functions/server', Route);
 

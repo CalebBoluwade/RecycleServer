@@ -2,11 +2,12 @@
     functions = "src"
     command = "npm run build"
     publish="."
-    port=1732
-# [[redirects]]
-#     to="/.netlify/functions/api/:splat"
-#     from="/*"
-#     status=200
+    # port=1732
+
+[[redirects]]
+    to="/.netlify/functions/api/:splat"
+    from="/*"
+    status=200
 
 [functions]
     external_node_modules = ["mongodb", "express"]
