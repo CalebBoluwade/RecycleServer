@@ -3,17 +3,14 @@ dotenv.config();
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { config } from './Config/config';
+import { config } from './Config/index.config';
 import bodyParser from 'body-parser';
 import { initializeUnhandledException } from './Utils/ErrorHandler.util';
 import ServerlessHttp from 'serverless-http';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
-
+// import https from 'https';
+// import fs from 'fs';
+// import path from 'path';
 import { App, Route } from './Routes/Route.Index';
-import { OpenApi, textPlain } from 'ts-openapi';
-import { openApiInstance } from './Utils/openApi.util';
 import dayjs from 'dayjs';
 
 const router: Application = express();
@@ -51,8 +48,8 @@ const startHttpsServer = () => {
 
     /** Routes */
     // router.get('/', (req, res) => res.send('main'));
+    // router.use('/', Route);
     router.use('/.netlify/functions/server', Route);
-    // router.use('/.netlify/functions/api', Route);
 
     App(router);
 

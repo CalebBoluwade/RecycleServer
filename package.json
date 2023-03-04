@@ -6,8 +6,8 @@
     "scripts": {
         "start": "nodemon build/server.js",
         "eject": "tsc -p .",
-        "dev": "netlify dev",
-        "build": "netlify deploy --prod"
+        "dev": "netlify dev --watch",
+        "build": "netlify deploy --prod --watch"
     },
     "keywords": [],
     "author": "",
