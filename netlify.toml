@@ -1,7 +1,5 @@
 [build]
     functions = "src"
-    command="npm install && npm run build"
-    publish="."
 
 [[redirects]]
     to="/.netlify/functions/server/:splat"
