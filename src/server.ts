@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { config } from './Config/config';
 import bodyParser from 'body-parser';
 import { initializeUnhandledException } from './Utils/ErrorHandler.util';
+import ServerlessHttp from 'serverless-http';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
@@ -13,10 +14,10 @@ import path from 'path';
 import { App, Route } from './Routes/Route.Index';
 import { OpenApi, textPlain } from 'ts-openapi';
 import { openApiInstance } from './Utils/openApi.util';
+import dayjs from 'dayjs';
 
 const router: Application = express();
-
-export default router;
+// export default router;
 
 mongoose.set('strictQuery', false);
 mongoose
@@ -29,7 +30,7 @@ mongoose
 
 const startHttpsServer = () => {
     router.use((req, res, next) => {
-        console.log(`${new Date()} ===> [METHOD]: [${req.method}] <-> [ENDPOINT]: [${req.url}] <-> [THREAD]: [${process.pid}] <-> [IP]: [${req.socket.remoteAddress}]`);
+        console.log(`${dayjs().format()} ===> [${req.method} ${req.url}] [THREAD]: [${process.pid}] [IP]: [${req.socket.remoteAddress}]`);
 
         next();
     });
@@ -49,12 +50,14 @@ const startHttpsServer = () => {
     );
 
     /** Routes */
-    router.use('/api/v1', Route);
+    // router.get('/', (req, res) => res.send('main'));
+    router.use('/.netlify/functions/server', Route);
+    // router.use('/.netlify/functions/api', Route);
 
     App(router);
 
-    router.listen(Number(process.env.PORT) || 4321, () => {
-        console.log(`Server started on Port ${process.env.PORT || 4321}`);
+    router.listen(process.env.PORT, () => {
+        console.log(`Server started on Port ${process.env.PORT}`);
 
         const connection = mongoose.connection;
 
@@ -82,3 +85,5 @@ const startHttpsServer = () => {
         });
     });
 };
+
+module.exports.handler = ServerlessHttp(router);

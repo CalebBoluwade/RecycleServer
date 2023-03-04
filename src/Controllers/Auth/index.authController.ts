@@ -7,7 +7,7 @@ import ValidateRequest from '../../Middlewares/Validate.middleware';
 import { OpenApi, textPlain, Types } from 'ts-openapi';
 import { UserSet } from '../../Utils/Types.utils';
 
-export const LoginRoute = (Route: Router, openApi: OpenApi) => {
+export const UserLoginRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/continue', ValidateRequest(LoginUserSchema), letUsersLogin);
     openApi.addPath(
         '/users/continue',
@@ -62,7 +62,7 @@ export const LoginRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
+export const UserRegisterRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/join', ValidateRequest(createUserSchema), UserCreation);
     openApi.addPath(
         '/users/join',
@@ -142,7 +142,7 @@ export const RegisterRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const verifyRoute = (Route: Router, openApi: OpenApi) => {
+export const UserVerifyRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/verify/:id/:verificationCode', ValidateRequest(verifyUserSchema), VerifyUser);
     openApi.addPath(
         '/users/verify/:id/:verificationCode',

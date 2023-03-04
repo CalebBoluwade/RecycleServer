@@ -1,30 +1,30 @@
 import { NextFunction, Request, Response } from 'express';
-import User from './User.model';
+import Vendor from './Vendor.model';
 import { omit } from 'lodash';
-import { LoginUserInput } from './auth.schema';
+import { LoginUserInput } from '../Auth/auth.schema';
 import { handleError } from '../../Utils/ErrorHandler.util';
 import { signJWT } from '../../Security/jwt.secure';
 
-const letUsersLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response, next: NextFunction) => {
+const letVendorsLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response, next: NextFunction) => {
     let { user, password }: { user: string; password: string } = req.body;
 
     const RegionNumberPrefix = '+234';
     const formattedNumber = RegionNumberPrefix + user.slice(1, 11);
 
     try {
-        let existingUser = await User.findOne({ $or: [{ email: user.toLowerCase() }, { phoneNumber: formattedNumber }] });
+        let existingVendor = await Vendor.findOne({ $or: [{ email: user.toLowerCase() }, { phoneNumber: formattedNumber }] });
 
-        if (existingUser) {
-            const isValid = await existingUser.validatePassword(password);
+        if (existingVendor) {
+            const isValid = await existingVendor.validatePassword(password);
             if (isValid) {
-                let authenticatedUser = omit(existingUser, ['password', 'verificationCode']);
+                let authenticatedUser = omit(existingVendor, ['password', 'verificationCode']);
                 return res.status(200).json({ data: authenticatedUser, message: 'Login Successful', accessToken: signJWT(authenticatedUser._id) });
             } else {
                 return res.status(401).json({ message: 'Invalid email or password' });
             }
         }
 
-        if (!existingUser) {
+        if (!existingVendor) {
             // next('User not found');
             return res.status(404).json({ message: 'User not found' });
         }
@@ -34,4 +34,4 @@ const letUsersLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response
     }
 };
 
-export default letUsersLogin;
+export default letVendorsLogin;

@@ -6,9 +6,12 @@ import mongoose from 'mongoose';
 import { CollectorStatus, CompletionStatus, wasteBinData } from '../../Utils/Types.utils';
 import Vendor from '../Vendors/Vendor.model';
 import lodash from 'lodash';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import sendSMSMessage from '../../Integrations/Messages/TwilloSMS.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 
+dayjs.extend(relativeTime);
 // export const BinService = async (req: Request<{}, {}, BinDataSchema>, res: Response<any>) => {
 // try {
 //     } catch (error) {
@@ -18,12 +21,12 @@ import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.serv
 
 export const CreateNewBin = async (req: Request<{}, {}, BinDataSchema>, res: Response<any>) => {
     try {
-        let { email, address, wasteBags, wasteMaterials, pickupDate, phoneNumber, vendor, imageDescription }: Partial<IBin> = req.body;
+        let { ownerId, address, wasteBags, wasteMaterials, pickupDate, phoneNumber, vendor, imageDescription }: Partial<IBin> = req.body;
 
         const wasteBin = new Bin({
             _id: new mongoose.Types.ObjectId(),
             address,
-            email,
+            ownerId,
             phoneNumber,
             imageDescription,
             wasteBags,
@@ -71,18 +74,26 @@ export const FetchOtherWasteMaterials = (_: Request, res: Response<any>) => {
 };
 
 export const FetchUserBin = async (req: Request<FetchBinInput>, res: Response<any>) => {
-    let email = req.params['email'];
+    let id = req.params['id'];
 
     try {
         let userBin = await Bin.find({
-            email: email
-        }).lean();
+            ownerId: id
+        });
 
         let user_Bin: any = [];
+        // let omittedDataBin
         if (userBin.length > 0) {
-            userBin.forEach((item) => (user_Bin = [...user_Bin, lodash.omit(item, ['_id', 'address', '__v', 'email', 'phoneNumber', 'vendor.id', 'vendor.vendor'])]));
+            userBin.forEach(
+                (item, index) =>
+                    (user_Bin = [
+                        // ...user_Bin,
+                        (item.formatDate = dayjs(item.pickupDate).format('YYYY-MM-DD')),
+                        lodash.omit(item, ['_id', 'address', '__v', 'phoneNumber', 'vendor.id', 'vendor.vendor'])
+                    ])
+            );
         }
-        res.jsonp(user_Bin);
+        res.json(user_Bin);
     } catch (error) {
         res.status(500).send(error);
         console.error(error);

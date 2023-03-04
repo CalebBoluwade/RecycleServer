@@ -61,6 +61,7 @@ yarn-error.log
 
 node_modules
 .env
+package-lock.json
 
 # BUCK
 buck-out/
@@ -80,3 +81,5 @@ web-build/
 dist/
 
 # @end expo-cli
+# Local Netlify folder
+.netlify

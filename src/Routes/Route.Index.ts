@@ -1,9 +1,9 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-import { LoginRoute, RegisterRoute } from '../Controllers/Auth/index.authController';
+import { UserLoginRoute, UserVerifyRoute, UserRegisterRoute } from '../Controllers/Auth/index.authController';
 import { CreateBinRoute, FetchBinMaterialsRoute, FetchUserBinRoute, FetchVendorBinRoute } from '../Controllers/Bin/index.binController';
 
 // ** VENDOR ** //
-import { GetVendorsRoute, RegisterVendorRoute } from '../Controllers/Vendors/index.vendorController';
+import { GetVendorsRoute, VendorsRegisterRoute, VendorsLoginRoute } from '../Controllers/Vendors/index.vendorController';
 
 import { GenerateQR } from '../Controllers/index';
 import { GenerateReferalCode, ValidateRefCode as ValidateRef } from '../Utils/index.util';
@@ -21,6 +21,8 @@ const PingPong = (_: Request, Response: Response) => {
 
 const App = (Application: Application) => {
     const ApplicationRouter = (Application: Application, openApi: OpenApi) => {
+        Route.get('/', PingPong);
+
         const initHello = () => {
             Route.get('/ping', PingPong);
             openApi.addPath(
@@ -133,10 +135,12 @@ const App = (Application: Application) => {
             );
         };
 
-        LoginRoute(Route, openApi);
-        RegisterRoute(Route, openApi);
+        UserLoginRoute(Route, openApi);
+        UserRegisterRoute(Route, openApi);
+        UserVerifyRoute(Route, openApi);
 
-        RegisterVendorRoute(Route, openApi);
+        VendorsRegisterRoute(Route, openApi);
+        VendorsLoginRoute(Route, openApi);
         GetVendorsRoute(Route, openApi);
 
         CreateBinRoute(Route, openApi);

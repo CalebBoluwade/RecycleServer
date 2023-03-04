@@ -79,9 +79,9 @@ export const FetchBinMaterialsRoute = (Route: Router, openApi: OpenApi) => {
 };
 
 export const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
-    Route.get('/dispose/user/list/:email', ValidateRequest(FetchBinSchema), FetchUserBin);
+    Route.get('/dispose/user/list/:id', ValidateRequest(FetchBinSchema), FetchUserBin);
     openApi.addPath(
-        '/dispose/user/list/:email',
+        '/dispose/user/list/:id',
         {
             get: {
                 description: 'Disposal', // Method description
@@ -90,7 +90,7 @@ export const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
                 requestSchema: {
                     headers: {},
                     params: {
-                        email: Types.Email({
+                        id: Types.String({
                             required: true
                         })
                     }
@@ -109,9 +109,9 @@ export const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
 };
 
 export const FetchVendorBinRoute = (Route: Router, openApi: OpenApi) => {
-    Route.get('/dispose/vendor/list', ValidateRequest(VendorFetchBinSchema), FetchVendorBin);
+    Route.get('/dispose/vendor/list/:id', ValidateRequest(VendorFetchBinSchema), FetchVendorBin);
     openApi.addPath(
-        '/dispose/vendor/list',
+        '/dispose/vendor/list/:id',
         {
             get: {
                 description: 'Disposal', // Method description
@@ -119,12 +119,9 @@ export const FetchVendorBinRoute = (Route: Router, openApi: OpenApi) => {
                 operationId: 'dispose-vendor-list', // an unique operation id
                 requestSchema: {
                     headers: {},
-                    query: {
-                        email: Types.Email({
-                            required: false
-                        }),
-                        phoneNumber: Types.Email({
-                            required: false
+                    params: {
+                        id: Types.String({
+                            required: true
                         })
                     }
                 },

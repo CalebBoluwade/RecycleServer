@@ -34,7 +34,7 @@ export type BinDataSchema = TypeOf<typeof BinSchema>['body'];
 
 export const FetchBinSchema = object({
     params: object({
-        email: string()
+        id: string()
     })
 });
 export type FetchBinInput = TypeOf<typeof FetchBinSchema>['params'];

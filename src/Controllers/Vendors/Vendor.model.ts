@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { customerStatus } from '../../Utils/Types.utils';
+import argo2 from 'argon2';
 
 export interface IVendor {
     companyName: string;
@@ -11,7 +12,11 @@ export interface IVendor {
     vendorStatus: customerStatus;
 }
 
-export interface IVendorModel extends IVendor, Document {}
+export interface IVendorModel extends IVendor, Document {
+    createdAt: Date;
+    updatedAt: Date;
+    validatePassword(inputPassword: string): Promise<Boolean>;
+}
 
 const vendorSchema: Schema = new Schema({
     companyName: {
@@ -41,5 +46,14 @@ const vendorSchema: Schema = new Schema({
         required: true
     }
 });
+
+vendorSchema.methods.validatePassword = async function (inputPassword: string): Promise<boolean> {
+    const user = this as IVendorModel;
+
+    return await argo2.verify(user.password, inputPassword).catch((e) => {
+        console.log(e);
+        return false;
+    });
+};
 
 export default mongoose.model<IVendorModel>('Vendor', vendorSchema);

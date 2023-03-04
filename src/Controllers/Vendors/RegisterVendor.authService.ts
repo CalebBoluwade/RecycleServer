@@ -7,17 +7,25 @@ import EmailClient from '../../Integrations/Mails/sendgrid.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 import GenerateOTP from '../../Security/OTP.secure';
 import { CreateVendorInput } from './vendor.schema';
-import { customerStatus } from '../../Utils/Types.utils';
+import argo2 from 'argon2';
+import { customerStatus, UserSet } from '../../Utils/Types.utils';
 
 const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Response, next: NextFunction) => {
     const { email, companyName, password, address, phoneNumber }: Partial<IVendor> = req.body;
+
+    const userHashedPwd = await argo2.hash(password);
+    const OTP = GenerateOTP();
+
+    const RegionNumberPrefix = '+234';
+    const formattedNumber = RegionNumberPrefix + phoneNumber.slice(1, 11);
 
     const vendor = new Vendor({
         _id: new mongoose.Types.ObjectId(),
         companyName,
         email,
-        password,
-        phoneNumber,
+        password: userHashedPwd,
+        phoneNumber: formattedNumber,
+        userType: UserSet['VENDOR'],
         address,
         vendorStatus: customerStatus['PENDING']
     });
@@ -35,7 +43,7 @@ const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Resp
                 message: `Your OTP Verification CODE is ${OTP.OTP}. Expires in ${OTP.expiresIn / 1000 / 60} Minutes`
             });
 
-            EmailClient({ email: email, subject: 'COMOT YAMA YAMA WELCOMES YOU', body: `TESTING. Your OTP Verification CODE is ${OTP.OTP}. Expires in ${OTP.expiresIn} Minutes.` });
+            EmailClient({ email: email, subject: 'COMOT YAMA YAMA WELCOMES YOU', body: `TESTING. Your OTP Verification CODE is ${OTP.OTP}. Expires in ${OTP.expiresIn / 1000 / 60} Minutes.` });
 
             return res.status(201).json({ message: 'Successful', OTP: `A 6 - digit OTP has been sent to ${email} and ${phoneNumber} for user verification.`, data: newVendor });
             // return res.status(201).json({ message: 'Successful', vendor });
