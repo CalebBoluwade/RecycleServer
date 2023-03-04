@@ -8,7 +8,7 @@
         "start": "nodemon",
         "eject": "tsc -p .",
         "dev": "netlify dev",
-        "build": "nodemon"
+        "build": "netlify deploy"
     },
     "keywords": [],
     "author": "",
