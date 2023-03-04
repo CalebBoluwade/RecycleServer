@@ -1,7 +1,6 @@
 [build]
     functions = "src"
     command = "npm install && npm run build"
-    publish = "."
 
 [functions]
     external_node_modules = ["mongodb", "express"]
