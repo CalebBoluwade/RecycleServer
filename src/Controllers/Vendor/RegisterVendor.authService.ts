@@ -7,13 +7,13 @@ import EmailClient from '../../Integrations/Mails/sendgrid.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 import GenerateOTP from '../../Security/OTP.secure';
 import { CreateVendorInput } from './vendor.schema';
-import argo2 from 'argon2';
+// import argo2 from 'argon2';
 import { customerStatus, UserSet } from '../../Utils/Types.utils';
 
 const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Response, next: NextFunction) => {
     const { email, companyName, password, address, phoneNumber }: Partial<IVendor> = req.body;
 
-    const userHashedPwd = await argo2.hash(password);
+    // const userHashedPwd = await argo2.hash(password);
     const OTP = GenerateOTP();
 
     const RegionNumberPrefix = '+234';
@@ -23,7 +23,8 @@ const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Resp
         _id: new mongoose.Types.ObjectId(),
         companyName,
         email,
-        password: userHashedPwd,
+        // password: userHashedPwd,
+        password,
         phoneNumber: formattedNumber,
         userType: UserSet['VENDOR'],
         address,

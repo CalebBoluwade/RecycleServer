@@ -2,11 +2,15 @@ import { object, number, string, TypeOf, array } from 'zod';
 
 export const BinSchema = object({
     body: object({
-        email: string({
-            required_error: 'email is required'
-        }).email('Not a valid email'),
-        address: string({
-            required_error: 'Address not provided'
+        ownerId: string({
+            required_error: 'ownerId is required'
+        }),
+        address: object({
+            description: string().optional(),
+            latitude: number({
+                required_error: 'Address not provided'
+            }),
+            longitude: number()
         }),
         phoneNumber: string({
             required_error: 'phone number not provided'
@@ -41,8 +45,7 @@ export type FetchBinInput = TypeOf<typeof FetchBinSchema>['params'];
 
 export const VendorFetchBinSchema = object({
     params: object({
-        email: string().email().optional(),
-        phoneNumber: string().optional()
+        id: string()
     })
 });
 

@@ -80,3 +80,5 @@ interface Transaction {
     CRacctName: string;
     CRacctNo: string;
 }
+
+interface Response {}

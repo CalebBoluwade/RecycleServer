@@ -7,14 +7,14 @@ import sendSMSMessage from '../../Integrations/Messages/TwilloSMS.service';
 import EmailClient from '../../Integrations/Mails/sendgrid.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 import { customerStatus } from '../../Utils/Types.utils';
-import argo2 from 'argon2';
+// import argo2 from 'argon2';
 import lodash from 'lodash';
 
 const UserCreation = async (req: Request<{}, {}, CreateUserInput>, res: Response, next: NextFunction) => {
     const { email, userType, address, fullName, password, phoneNumber }: Partial<IUser> = req.body;
 
     try {
-        const userHashedPwd = await argo2.hash(password);
+        // const userHashedPwd = await argo2.hash(password);
         const OTP = GenerateOTP();
 
         const RegionNumberPrefix = '+234';
@@ -25,7 +25,7 @@ const UserCreation = async (req: Request<{}, {}, CreateUserInput>, res: Response
             fullName,
             address,
             email,
-            password: userHashedPwd,
+            password,
             userType,
             verificationCode: OTP,
             refCode: 'NA',

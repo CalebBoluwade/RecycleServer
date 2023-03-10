@@ -4,20 +4,26 @@ import { BinDataSchema, FetchBinInput, VendorFetchBinInput } from './bin.schema'
 import { handleError } from '../../Utils/ErrorHandler.util';
 import mongoose from 'mongoose';
 import { CollectorStatus, CompletionStatus, wasteBinData } from '../../Utils/Types.utils';
-import Vendor from '../Vendors/Vendor.model';
+import Vendor from '../Vendor/Vendor.model';
 import lodash from 'lodash';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import sendSMSMessage from '../../Integrations/Messages/TwilloSMS.service';
-import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
+import { Res } from '../../Schema/Response.schema';
 
-dayjs.extend(relativeTime);
-// export const BinService = async (req: Request<{}, {}, BinDataSchema>, res: Response<any>) => {
-// try {
-//     } catch (error) {
-//         handleError(error, res);
-//     }
-// };
+export const FetchOtherWasteMaterials = (_: Request, res: Response<Res>) => {
+    const dataSet = [
+        { key: '0', value: 'Office Paper [Shredded]' },
+        { key: '1', value: 'Office Paper [Unshredded]' },
+        { key: '2', value: 'Appliances' },
+        { key: '3', value: 'Aluminium Cans' },
+        { key: '4', value: 'Nylon(s)', disabled: true },
+        { key: '5', value: 'PVC Pipes' },
+        { key: '6', value: 'Cartons' },
+        { key: '8', value: 'Plastic' },
+        { key: '9', value: 'Glass' }
+    ];
+
+    res.send({ message: '', data: dataSet });
+};
 
 export const CreateNewBin = async (req: Request<{}, {}, BinDataSchema>, res: Response<any>) => {
     try {
@@ -32,6 +38,7 @@ export const CreateNewBin = async (req: Request<{}, {}, BinDataSchema>, res: Res
             wasteBags,
             wasteMaterials,
             pickupDate,
+            formatDate: dayjs(pickupDate).fromNow(),
             vendor,
             CompletionStatus: CompletionStatus['PENDING'],
             CollectorStatus: CollectorStatus['PENDING']
@@ -57,23 +64,7 @@ export const CreateNewBin = async (req: Request<{}, {}, BinDataSchema>, res: Res
     }
 };
 
-export const FetchOtherWasteMaterials = (_: Request, res: Response<any>) => {
-    const dataSet = [
-        { key: '0', value: 'Office Paper [Shredded]' },
-        { key: '1', value: 'Office Paper [Unshredded]' },
-        { key: '2', value: 'Appliances' },
-        { key: '3', value: 'Aluminium Cans' },
-        { key: '4', value: 'Nylon(s)', disabled: true },
-        { key: '5', value: 'PVC Pipes' },
-        { key: '6', value: 'Cartons' },
-        { key: '8', value: 'Plastic' },
-        { key: '9', value: 'Glass' }
-    ];
-
-    res.send(dataSet);
-};
-
-export const FetchUserBin = async (req: Request<FetchBinInput>, res: Response<any>) => {
+export const FetchUserBin = async (req: Request<FetchBinInput>, res: Response<Res>) => {
     let id = req.params['id'];
 
     try {
@@ -84,23 +75,20 @@ export const FetchUserBin = async (req: Request<FetchBinInput>, res: Response<an
         let user_Bin: any = [];
         // let omittedDataBin
         if (userBin.length > 0) {
-            userBin.forEach(
-                (item, index) =>
-                    (user_Bin = [
-                        // ...user_Bin,
-                        (item.formatDate = dayjs(item.pickupDate).format('YYYY-MM-DD')),
-                        lodash.omit(item, ['_id', 'address', '__v', 'phoneNumber', 'vendor.id', 'vendor.vendor'])
-                    ])
-            );
+            res.send({ message: 'successful', data: userBin });
+            // userBin.forEach((item) => (user_Bin = [...user_Bin, itedayjs(item.pickupDate).fromNow()]));
+
+            // res.json(user_Bin);
+        } else {
+            res.send({ data: [], message: 'No bin found' });
         }
-        res.json(user_Bin);
-    } catch (error) {
-        res.status(500).send(error);
+    } catch (error: any) {
+        res.status(500).send({ message: 'an error occured', data: null, error: error });
         console.error(error);
     }
 };
 
-export const FetchVendorBin = async (req: Request<VendorFetchBinInput>, res: Response<any>) => {
+export const FetchVendorBin = async (req: Request<VendorFetchBinInput>, res: Response<Res>) => {
     let { email, phoneNumber } = req.query;
     try {
         let vendorBin = await Bin.find({
@@ -108,10 +96,10 @@ export const FetchVendorBin = async (req: Request<VendorFetchBinInput>, res: Res
         });
 
         if (vendorBin) {
-            res.send(vendorBin);
+            res.send({ message: 'successful', data: vendorBin });
         }
-    } catch (error) {
-        res.status(500).send(error);
+    } catch (error: any) {
+        res.status(500).send({ message: 'an error occured', data: null, error: error });
         console.error(error);
     }
 };

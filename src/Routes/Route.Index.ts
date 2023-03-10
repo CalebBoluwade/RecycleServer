@@ -3,7 +3,7 @@ import { UserLoginRoute, UserVerifyRoute, UserRegisterRoute } from '../Controlle
 import { CreateBinRoute, FetchBinMaterialsRoute, FetchUserBinRoute, FetchVendorBinRoute } from '../Controllers/Bin/index.binController';
 
 // ** VENDOR ** //
-import { GetVendorsRoute, VendorsRegisterRoute, VendorsLoginRoute } from '../Controllers/Vendors/index.vendorController';
+import { GetVendorsRoute, VendorsRegisterRoute, VendorsLoginRoute } from '../Controllers/Vendor/index.vendorController';
 
 import { GenerateQR } from '../Controllers/index';
 import { GenerateReferalCode, ValidateRefCode as ValidateRef } from '../Utils/index.util';

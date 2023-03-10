@@ -9,12 +9,14 @@ import bodyParser from 'body-parser';
 import ServerlessHttp from 'serverless-http';
 import { App, Route } from './Routes/Route.Index';
 import { initializeUnhandledException } from './Utils/ErrorHandler.util';
+import relativeTime from 'dayjs/plugin/relativeTime';
 // import https from 'https';
 // import fs from 'fs';
 // import path from 'path';
 
 const router: Application = express();
 
+dayjs.extend(relativeTime);
 // const startHttpsServer = () => {
 mongoose.set('strictQuery', false);
 mongoose
@@ -72,12 +74,12 @@ router.use(
 
 /** Routes */
 // router.get('/', (req, res) => res.send('main'));
-router.use('/', Route);
+router.use('/api/v1', Route);
 
 App(router);
 
 // router.listen(process.env.PORT, () => {
-console.log(`Server started on Port ${process.env.PORT}`);
+//     console.log(`Server started on Port ${process.env.PORT}`);
 // });
 // };
 
