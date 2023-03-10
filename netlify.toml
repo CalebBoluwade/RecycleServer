@@ -14,8 +14,8 @@
 [context.production.environment]
     NODE_ENV = "production"
 
-[build.environment]
-  NODE_VERSION = "18.x"
+# [build.environment]
+#   NODE_VERSION = "18.x"
 
 [[redirects]]
     to="/.netlify/functions/server/:splat"
