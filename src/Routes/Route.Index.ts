@@ -1,9 +1,9 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-import { UserLoginRoute, UserVerifyRoute, UserRegisterRoute } from '../Controllers/Auth/index.authController';
-import { CreateBinRoute, FetchBinMaterialsRoute, FetchUserBinRoute, FetchVendorBinRoute } from '../Controllers/Bin/index.binController';
+import Users from '../Controllers/Auth/index.authRoutes';
+import Bin from '../Controllers/Bin/index.binRoutes';
 
 // ** VENDOR ** //
-import { GetVendorsRoute, VendorsRegisterRoute, VendorsLoginRoute } from '../Controllers/Vendor/index.vendorController';
+import Vendor from '../Controllers/Vendor/index.vendorRoutes';
 
 import { GenerateQR } from '../Controllers/index';
 import { GenerateReferalCode, ValidateRefCode as ValidateRef } from '../Utils/index.util';
@@ -11,6 +11,7 @@ import { initOpenApi, openApiInstance } from '../Utils/openApi.util';
 import { OpenApi, textPlain, Types } from 'ts-openapi';
 import { TestMessagingService } from '../Integrations/Messages/TestMessagingservice';
 import TestEmail from '../Integrations/Mails/sendgrid.service';
+import TestEmail2 from '../Integrations/Mails/mail.service';
 
 const Route = express.Router();
 
@@ -135,22 +136,16 @@ const App = (Application: Application) => {
             );
         };
 
-        UserLoginRoute(Route, openApi);
-        UserRegisterRoute(Route, openApi);
-        UserVerifyRoute(Route, openApi);
-
-        VendorsRegisterRoute(Route, openApi);
-        VendorsLoginRoute(Route, openApi);
-        GetVendorsRoute(Route, openApi);
-
-        CreateBinRoute(Route, openApi);
-        FetchBinMaterialsRoute(Route, openApi);
-        FetchUserBinRoute(Route, openApi);
-        FetchVendorBinRoute(Route, openApi);
+        // Users
+        Users(Route, openApi);
+        // VENDORS
+        Vendor(Route, openApi);
+        // WASTE BIN
+        Bin(Route, openApi);
 
         Route.get('/test_messaging', TestMessagingService);
 
-        // TestEmail({ email: 'calebboluwade@keystonebankng.com' });
+        Route.get('/test_email', () => TestEmail2({ email: 'gr00vywavysavage@gmail.com', subject: 'Testing', body: 'bvuj' }));
 
         // initializes schema endpoint and UI
         GenerateQRcode();

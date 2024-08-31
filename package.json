@@ -5,7 +5,7 @@
     "repository": "https://github.com/CalebBoluwade/RecycleServer",
     "main": "src/server.ts",
     "scripts": {
-        "start": "nodemon",
+        "start": "nodemon --inspect",
         "eject": "tsc -p .",
         "dev": "netlify dev",
         "build": "netlify deploy --prod --debug"

@@ -1,17 +1,14 @@
 import jwt from 'jsonwebtoken';
 
-const privateKey = 'kaTakaTa';
-const publicKey = 'kaTakaTa2';
-
-export const signJWT = (id: any) => {
-    return jwt.sign({ _id: id }, privateKey, {
+export const signJWT = (id: string, type: string) => {
+    return jwt.sign({ _id: id, userType: type }, String(process.env.privateKey), {
         expiresIn: '1d'
     });
 };
 
 export const verifyJWT = (token: string) => {
     try {
-        const decoded = jwt.verify(token, privateKey);
+        const decoded = jwt.verify(token, String(process.env.privateKey));
 
         return {
             valid: true,

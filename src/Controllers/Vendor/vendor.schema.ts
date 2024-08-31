@@ -14,8 +14,8 @@ export const createVendorSchema = object({
         phoneNumber: string({
             required_error: 'Phone number is required'
         })
-            .min(10, 'Minimum of 10 characters')
-            .max(11, 'Maximum of 11 characters'),
+            .min(11, 'Phone Number must have min. of 10 characters')
+            .max(11, 'Phone Number must have max. of 11 characters'),
         address: string({
             required_error: 'Address is required'
         }).min(15, 'Enter an address of minimum 15 characters')

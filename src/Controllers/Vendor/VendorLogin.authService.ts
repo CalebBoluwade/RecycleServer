@@ -18,7 +18,7 @@ const letVendorsLogin = async (req: Request<{}, {}, LoginUserInput>, res: Respon
             const isValid = await existingVendor.validatePassword(password);
             if (isValid) {
                 let authenticatedUser = omit(existingVendor, ['password', 'verificationCode']);
-                return res.status(200).json({ data: authenticatedUser, message: 'Login Successful', accessToken: signJWT(authenticatedUser._id) });
+                return res.status(200).json({ data: authenticatedUser, message: 'Login Successful', accessToken: signJWT(authenticatedUser._id, 'VENDOR') });
             } else {
                 return res.status(401).json({ message: 'Invalid email or password' });
             }

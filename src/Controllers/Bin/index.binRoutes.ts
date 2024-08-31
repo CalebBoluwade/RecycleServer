@@ -2,12 +2,12 @@ import { Router } from 'express';
 
 import { OpenApi, textPlain, Types } from 'ts-openapi';
 // import { userTypeSet } from '../../Utils/Types.utils';
-import { CreateNewBin, FetchOtherWasteMaterials, FetchUserBin, FetchVendorBin } from './Bin.service';
-import { BinSchema, FetchBinSchema, VendorFetchBinSchema } from './bin.schema';
+import { BinUpdate, CreateNewBin, FetchOtherWasteMaterials, FetchUserBin, FetchVendorBin } from './Bin.service';
+import { BinSchema, FetchBinSchema } from './bin.schema';
 import ValidateRequest from '../../Middlewares/Validate.middleware';
 import SessionController from '../../Middlewares/Session.middleware';
 
-export const CreateBinRoute = (Route: Router, openApi: OpenApi) => {
+const CreateBinRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/dispose/wastebin', ValidateRequest(BinSchema), CreateNewBin);
     openApi.addPath(
         '/dispose/wastebin',
@@ -53,10 +53,10 @@ export const CreateBinRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const FetchBinMaterialsRoute = (Route: Router, openApi: OpenApi) => {
-    Route.get('/dispose/materials', SessionController(), FetchOtherWasteMaterials);
+const FetchBinMaterialsRoute = (Route: Router, openApi: OpenApi) => {
+    Route.get('/list/bin/items', SessionController(), FetchOtherWasteMaterials);
     openApi.addPath(
-        '/dispose/materials',
+        '/list/bin/items',
         {
             get: {
                 description: 'Disposal', // Method description
@@ -78,10 +78,10 @@ export const FetchBinMaterialsRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
-    Route.get('/dispose/user/list/:id', ValidateRequest(FetchBinSchema), FetchUserBin);
+const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
+    Route.get('/dispose/list/user/:id', ValidateRequest(FetchBinSchema), FetchUserBin);
     openApi.addPath(
-        '/dispose/user/list/:id',
+        '/dispose/list/user/:id',
         {
             get: {
                 description: 'Disposal', // Method description
@@ -108,10 +108,10 @@ export const FetchUserBinRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const FetchVendorBinRoute = (Route: Router, openApi: OpenApi) => {
-    Route.get('/dispose/vendor/list/:id', ValidateRequest(VendorFetchBinSchema), FetchVendorBin);
+const FetchVendorBinRoute = (Route: Router, openApi: OpenApi) => {
+    Route.get('/dispose/list/vendor/:id', ValidateRequest(FetchBinSchema), FetchVendorBin);
     openApi.addPath(
-        '/dispose/vendor/list/:id',
+        '/dispose/list/vendor/:id',
         {
             get: {
                 description: 'Disposal', // Method description
@@ -137,3 +137,43 @@ export const FetchVendorBinRoute = (Route: Router, openApi: OpenApi) => {
         true // make method visible
     );
 };
+
+const BinActions = (Route: Router, openApi: OpenApi) => {
+    Route.patch('/update/bin/:id', SessionController(), BinUpdate);
+    openApi.addPath(
+        '/update/bin/:id',
+        {
+            get: {
+                description: 'Update Vendor Bin API',
+                summary: 'Vendor Registration',
+                operationId: 'vendor-update',
+                requestSchema: {
+                    headers: {},
+                    params: {
+                        id: Types.String({
+                            required: true
+                        })
+                    }
+                },
+                responses: {
+                    // here we declare the response types
+                    200: textPlain('Successful'),
+                    500: textPlain('Internal Server Error')
+                },
+                tags: ['Vendor'], // these tags group your methods in UI,
+                security: []
+            }
+        },
+        true // make method visible
+    );
+};
+
+const Bin = (Route: Router, openApi: OpenApi) => {
+    CreateBinRoute(Route, openApi);
+    FetchBinMaterialsRoute(Route, openApi);
+    FetchUserBinRoute(Route, openApi);
+    FetchVendorBinRoute(Route, openApi);
+    BinActions(Route, openApi);
+};
+
+export default Bin;

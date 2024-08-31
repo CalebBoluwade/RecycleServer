@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
-import Bin, { IBin } from './Bin.model';
-import { BinDataSchema, FetchBinInput, VendorFetchBinInput } from './bin.schema';
+import Bin, { IBin, IBinModel } from './Bin.model';
+import { BinDataSchema, FetchBinInput } from './bin.schema';
 import { handleError } from '../../Utils/ErrorHandler.util';
 import mongoose from 'mongoose';
 import { CollectorStatus, CompletionStatus, wasteBinData } from '../../Utils/Types.utils';
 import Vendor from '../Vendor/Vendor.model';
 import lodash from 'lodash';
+import User from '../Auth/User.model';
 import dayjs from 'dayjs';
 import { Res } from '../../Schema/Response.schema';
+import EmailClient from '../../Integrations/Mails/mail.service';
+import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
+import util from 'node:util';
 
 export const FetchOtherWasteMaterials = (_: Request, res: Response<Res>) => {
     const dataSet = [
@@ -52,12 +56,13 @@ export const CreateNewBin = async (req: Request<{}, {}, BinDataSchema>, res: Res
             //     phoneNumber: `+234${VendorDetails?.phoneNumber}`,
             //     message: ""
             // })
-            //     // sendSMSMessage({
-            //     //     phoneNumber: `+234${'8038220361'}`,
-            //     //     message: `Dear User, Your Waste of ${wasteBags} bag(s) has been successful scheduled for pick up ${
-            //     //         pickupDate === new Date() ? 'today' : pickupDate
-            //     //     }. Once accepted by the vendor, they'll be in contact with you.`
-            //     // });
+            EmailClient({ email: result.vendor.vendorEmail, subject: 'NEW WASTE BIN REQUEST', body: '' });
+            sendWhatsAppMessage({
+                phoneNumber: phoneNumber,
+                message: `Your Waste of ${wasteBags} bag(s) has been successful scheduled for pick up ${new Date(
+                    result.pickupDate
+                ).toISOString()}. Once accepted by the vendor, they'll be in contact with you.`
+            });
         });
     } catch (error) {
         handleError(error, res);
@@ -88,18 +93,86 @@ export const FetchUserBin = async (req: Request<FetchBinInput>, res: Response<Re
     }
 };
 
-export const FetchVendorBin = async (req: Request<VendorFetchBinInput>, res: Response<Res>) => {
-    let { email, phoneNumber } = req.query;
-    try {
-        let vendorBin = await Bin.find({
-            $or: [{ 'vendor.vendorEmail': email }, { 'vendor.vendorTel': `+234${phoneNumber}` }]
-        });
+export const FetchVendorBin = async (req: Request<FetchBinInput>, res: Response<Res>) => {
+    let id = req.params['id'];
+    const bin: Array<IBinModel> = [];
 
-        if (vendorBin) {
-            res.send({ message: 'successful', data: vendorBin });
+    try {
+        let VendorsBin = await Bin.find({ 'vendor.id': id });
+
+        if (VendorsBin) {
+            //     [VendorsBin].forEach(element => {
+
+            //     });
+            // VendorsBin?.formatDate = dayjs(pickupDate).fromNow(),
+
+            res.send({ message: 'successful', data: VendorsBin });
+        } else {
+            res.send({ data: [], message: 'No bin found' });
         }
     } catch (error: any) {
         res.status(500).send({ message: 'an error occured', data: null, error: error });
         console.error(error);
+    }
+};
+
+export const BinUpdate = async (req: Request, res: Response<Res>) => {
+    // console.log(res.locals.user);
+    try {
+        // Bin ID
+        let id = req.params['id'];
+        let { status, owner, date, address } = req.body;
+
+        util.types.isDate(date);
+
+        const ownerId = await User.findById({ _id: owner });
+
+        if (status === 'INITIATED') {
+            const updatedBin = await Bin.findByIdAndUpdate({ _id: id }, { CompletionStatus: status }, { new: true });
+
+            if (updatedBin && ownerId) {
+                EmailClient({
+                    email: ownerId.email,
+                    subject: `WASTE BIN PICKUP REQUEST ${status}`,
+                    body: `YOUR REQUEST HAS BEEN ${status}`
+                });
+                return res.status(202).send({ message: 'Bin Updated Successfully', data: null });
+            }
+        } else if (status === 'POSTPONED') {
+            const updatedBin = await Bin.findByIdAndUpdate({ _id: id }, { CollectorStatus: status }, { new: true });
+
+            if (updatedBin && ownerId) {
+                EmailClient({
+                    email: ownerId.email,
+                    subject: `WASTE BIN PICKUP REQUEST ${status}`,
+                    body: `YOUR REQUEST HAS BEEN ${status} successfully to ${new Date(date).toISOString()} `
+                });
+                return res.status(202).send({ message: 'Bin Updated Successfully', data: null });
+            }
+        } else {
+            const updatedBin = await Bin.findByIdAndUpdate({ _id: id }, { CollectorStatus: status }, { new: true });
+
+            if (updatedBin && ownerId) {
+                EmailClient({
+                    email: ownerId.email,
+                    subject: `WASTE BIN PICKUP REQUEST ${status}`,
+                    body: `YOUR REQUEST HAS BEEN ${status}`
+                });
+                return res.status(202).send({ message: 'Bin Updated Successfully', data: null });
+            }
+        }
+        // await Bin.findOneAndUpdate({ _id: id }, { CollectorStatus: status }, { new: true }, (err, user) => {
+        //     if (user) {
+        //         //     console.log('Error:', err);
+        //         //     return res.send({ message: 'An Error Occured', data: null, error: err });
+        //         // } else {
+        //         console.log(user);
+        //
+        //         return res.send({ message: 'Successful', data: null });
+        //     }
+        // });
+    } catch (error: any) {
+        console.log({ error });
+        return res.status(400).json({ message: 'something went wrong', data: null, error: error });
     }
 };

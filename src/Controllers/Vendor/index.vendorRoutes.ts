@@ -135,3 +135,11 @@ export const GetVendorsRoute = (Route: Router, openApi: OpenApi) => {
         true // make method visible
     );
 };
+
+const Vendor = (Route: Router, openApi: OpenApi) => {
+    VendorsRegisterRoute(Route, openApi);
+    VendorsLoginRoute(Route, openApi);
+    GetVendorsRoute(Route, openApi);
+};
+
+export default Vendor;

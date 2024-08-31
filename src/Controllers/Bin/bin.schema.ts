@@ -17,7 +17,9 @@ export const BinSchema = object({
         }),
         wasteBags: number({
             required_error: 'mininmum of 1 Bag'
-        }).min(1, 'mininmum of 1 Bag'),
+        })
+            .min(1, 'mininmum of 1 Bag')
+            .max(10, 'maximum of 10 Bags'),
         wasteMaterials: array(string()),
         imageDescription: string().nullable().optional(),
         pickupDate: number({
@@ -42,11 +44,3 @@ export const FetchBinSchema = object({
     })
 });
 export type FetchBinInput = TypeOf<typeof FetchBinSchema>['params'];
-
-export const VendorFetchBinSchema = object({
-    params: object({
-        id: string()
-    })
-});
-
-export type VendorFetchBinInput = TypeOf<typeof VendorFetchBinSchema>['params'];

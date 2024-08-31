@@ -1,7 +1,9 @@
 import { ErrorRequestHandler, Request, Response } from 'express';
 import Vendor from './Vendor.model';
 import lodash from 'lodash';
-import { customerStatus } from '../../Utils/Types.utils';
+import { CollectorStatus, customerStatus } from '../../Utils/Types.utils';
+import { Res } from '../../Schema/Response.schema';
+import Bin from '../Bin/Bin.model';
 
 export const ActivateVendor = async (req: Request, res: Response) => {
     let id = req.query.id;
@@ -11,7 +13,7 @@ export const ActivateVendor = async (req: Request, res: Response) => {
     await Vendor.findOneAndUpdate({ id: id, update });
 };
 
-export const GetAvailableVendors = async (req: Request, res: Response) => {
+export const GetAvailableVendors = async (_: Request, res: Response) => {
     try {
         let availaleVendors = await Vendor.find({ vendorStatus: customerStatus['ACTIVE'] }).lean();
 
@@ -20,16 +22,6 @@ export const GetAvailableVendors = async (req: Request, res: Response) => {
             availaleVendors.forEach((vendor) => (Vendors = [...Vendors, lodash.omit(vendor, ['password', '__v'])]));
         }
         res.jsonp(Vendors);
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-export const GetPendingVendorRequests = async (req: Request, res: Response) => {
-    try {
-        let availaleVendors = await Vendor.find({ vendorStatus: customerStatus['ACTIVE'] });
-
-        res.send({ data: lodash.omit(availaleVendors, 'password') });
     } catch (error) {
         console.log(error);
     }

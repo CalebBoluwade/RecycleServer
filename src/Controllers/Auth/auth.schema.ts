@@ -28,8 +28,8 @@ export const createUserSchema = object({
         phoneNumber: string({
             required_error: 'Phone number is required'
         })
-            .min(10, 'Minimum of 10 characters')
-            .max(11, 'Maximum of 11 characters'),
+            .min(11, 'Phone Number must have min. of 10 characters')
+            .max(11, 'Phone Number must have max. of 11 characters'),
         address: string().nullish(),
         userType: string({
             required_error: 'user type is required'

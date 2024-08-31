@@ -3,14 +3,16 @@ import mongoose from 'mongoose';
 import { IVendor } from './Vendor.model';
 import sendSMSMessage from '../../Integrations/Messages/TwilloSMS.service';
 import Vendor from './Vendor.model';
-import EmailClient from '../../Integrations/Mails/sendgrid.service';
+import EmailClient from '../../Integrations/Mails/mail.service';
+// import EmailClient from '../../Integrations/Mails/sendgrid.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 import GenerateOTP from '../../Security/OTP.secure';
 import { CreateVendorInput } from './vendor.schema';
 // import argo2 from 'argon2';
 import { customerStatus, UserSet } from '../../Utils/Types.utils';
+import { Res } from '../../Schema/Response.schema';
 
-const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Response, next: NextFunction) => {
+const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Response<Res>, next: NextFunction) => {
     const { email, companyName, password, address, phoneNumber }: Partial<IVendor> = req.body;
 
     // const userHashedPwd = await argo2.hash(password);
@@ -21,7 +23,7 @@ const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Resp
 
     const vendor = new Vendor({
         _id: new mongoose.Types.ObjectId(),
-        companyName,
+        companyName: companyName.split(' ').length === 1 ? companyName + ' ' + 'LTD' : companyName,
         email,
         // password: userHashedPwd,
         password,
@@ -46,16 +48,15 @@ const VendorCreation = async (req: Request<{}, {}, CreateVendorInput>, res: Resp
 
             EmailClient({ email: email, subject: 'COMOT YAMA YAMA WELCOMES YOU', body: `TESTING. Your OTP Verification CODE is ${OTP.OTP}. Expires in ${OTP.expiresIn / 1000 / 60} Minutes.` });
 
-            return res.status(201).json({ message: 'Successful', OTP: `A 6 - digit OTP has been sent to ${email} and ${phoneNumber} for user verification.`, data: newVendor });
+            return res.status(201).json({ message: 'Successful', accessToken: `A 6 - digit OTP has been sent to ${email} and ${phoneNumber} for user verification.`, data: newVendor });
             // return res.status(201).json({ message: 'Successful', vendor });
         }
     } catch (err: any) {
         // console.log(err.code);
         if ((err.code = 11000)) {
-            res.status(400).json({ message: 'Vendor already exist with this email' });
+            res.status(400).json({ message: 'User already exists.', data: null, error: err });
         }
         console.error(err);
-        return res.status(403).json({ err });
     }
 
     // next()

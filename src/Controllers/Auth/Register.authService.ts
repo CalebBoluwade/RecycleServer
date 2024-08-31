@@ -4,13 +4,14 @@ import { CreateUserInput, VerifyUserInput } from './auth.schema';
 import mongoose from 'mongoose';
 import User, { IUser } from './User.model';
 import sendSMSMessage from '../../Integrations/Messages/TwilloSMS.service';
-import EmailClient from '../../Integrations/Mails/sendgrid.service';
+import EmailClient from '../../Integrations/Mails/mail.service';
 import sendWhatsAppMessage from '../../Integrations/Messages/TwilioWhatsApp.service';
 import { customerStatus } from '../../Utils/Types.utils';
 // import argo2 from 'argon2';
 import lodash from 'lodash';
+import { Res } from '../../Schema/Response.schema';
 
-const UserCreation = async (req: Request<{}, {}, CreateUserInput>, res: Response, next: NextFunction) => {
+const UserCreation = async (req: Request<{}, {}, CreateUserInput>, res: Response<Res>, next: NextFunction) => {
     const { email, userType, address, fullName, password, phoneNumber }: Partial<IUser> = req.body;
 
     try {
@@ -53,13 +54,14 @@ const UserCreation = async (req: Request<{}, {}, CreateUserInput>, res: Response
 
             return res.status(201).json({
                 message: 'Successful',
-                OTP: `A 6 - digit OTP has been sent to ${email} and ${formattedNumber} for user verification.`,
+                accessToken: `A 6 - digit OTP has been sent to ${email} and ${formattedNumber} for user verification.`,
                 data: omittedData
             });
         }
     } catch (err: any) {
+        // console.error(err);
         if ((err.code = 11000)) {
-            res.status(409).json({ message: 'Failed. User already exists.', data: err });
+            res.status(400).json({ message: 'User already exists.', data: null, error: err });
         }
     }
 };

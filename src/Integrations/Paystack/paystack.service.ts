@@ -10,7 +10,7 @@ import axios from 'axios';
 //   }
 // }
 
-export const makeRequest = async (requestObj: any) => {
+export const makeRequest = async (requestObj: Record<string, string>) => {
     const headers = {
         Authorization: `Bearer ${process.env.PAYSTACK_KEY}`,
         'Content-Type': 'application/json',

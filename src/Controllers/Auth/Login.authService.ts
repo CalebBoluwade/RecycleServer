@@ -7,7 +7,7 @@ import { signJWT } from '../../Security/jwt.secure';
 import { Res } from '../../Schema/Response.schema';
 
 const letUsersLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response<Res>) => {
-    let { user, password }: { user: string; password: string } = req.body;
+    let { user, password } = req.body;
 
     const RegionNumberPrefix = '+234';
     const formattedNumber = RegionNumberPrefix + user.slice(1, 11);
@@ -21,7 +21,7 @@ const letUsersLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response
             const isValid = await existingUser.validatePassword(password);
             if (isValid) {
                 let authenticatedUser = omit(existingUser, ['password', 'verificationCode']);
-                return res.status(200).json({ data: authenticatedUser, message: 'Login Successful', accessToken: signJWT(authenticatedUser._id) });
+                return res.status(200).json({ data: authenticatedUser, message: 'Login Successful', accessToken: signJWT(authenticatedUser._id, authenticatedUser.userType) });
             } else {
                 return res.status(401).json({ message: 'Invalid email or password', data: null });
             }
@@ -31,7 +31,7 @@ const letUsersLogin = async (req: Request<{}, {}, LoginUserInput>, res: Response
             return res.status(404).json({ message: 'User not found', data: null });
         }
     } catch (err: any) {
-        handleError(err, res);
+        // handleError(err, res);
         return res.status(500).json({ message: 'something went wrong', data: null, error: err });
     }
 };

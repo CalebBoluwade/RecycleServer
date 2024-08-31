@@ -7,7 +7,7 @@ import ValidateRequest from '../../Middlewares/Validate.middleware';
 import { OpenApi, textPlain, Types } from 'ts-openapi';
 import { UserSet } from '../../Utils/Types.utils';
 
-export const UserLoginRoute = (Route: Router, openApi: OpenApi) => {
+const UserLoginRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/continue', ValidateRequest(LoginUserSchema), letUsersLogin);
     openApi.addPath(
         '/users/continue',
@@ -62,7 +62,7 @@ export const UserLoginRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const UserRegisterRoute = (Route: Router, openApi: OpenApi) => {
+const UserRegisterRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/join', ValidateRequest(createUserSchema), UserCreation);
     openApi.addPath(
         '/users/join',
@@ -142,7 +142,7 @@ export const UserRegisterRoute = (Route: Router, openApi: OpenApi) => {
     );
 };
 
-export const UserVerifyRoute = (Route: Router, openApi: OpenApi) => {
+const UserVerifyRoute = (Route: Router, openApi: OpenApi) => {
     Route.post('/users/verify/:id/:verificationCode', ValidateRequest(verifyUserSchema), VerifyUser);
     openApi.addPath(
         '/users/verify/:id/:verificationCode',
@@ -178,3 +178,11 @@ export const UserVerifyRoute = (Route: Router, openApi: OpenApi) => {
         true // make method visible
     );
 };
+
+const Users = (Route: Router, openApi: OpenApi) => {
+    UserLoginRoute(Route, openApi);
+    UserRegisterRoute(Route, openApi);
+    UserVerifyRoute(Route, openApi);
+};
+
+export default Users;

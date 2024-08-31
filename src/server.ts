@@ -53,7 +53,7 @@ connection.on('error', (error: Error) => {
 });
 
 router.use((req, res, next) => {
-    console.log(`${dayjs().format()} [${req.method} ${req.url}] [THREAD]: [${process.pid}] [IP]: [${req.socket.remoteAddress}]`);
+    console.log(`${dayjs().format()} [${req.method} ${req.url}] [THREAD]: [${process.pid}]`);
 
     next();
 });
